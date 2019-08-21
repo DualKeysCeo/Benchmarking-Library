@@ -9,6 +9,10 @@ namespace benchmark {
 		m_StartTimepoint = std::chrono::high_resolution_clock::now();
 	}
 
+	Timer::Timer(char const* logPath): m_LogFile(logPath) {
+		m_StartTimepoint = std::chrono::high_resolution_clock::now();
+	}
+
 	Timer::~Timer() {
 		Stop();
 	}
@@ -23,11 +27,15 @@ namespace benchmark {
 		long long us = end - start;
 		double ms = us * 0.001;
 		double s = ms * 0.001;
+		char* response = "Timer response: %lld us (%.3f ms)\n";
 
-		if (ms > 1000) {
-			printf("Timer response: %.3f ms (%.3f s)\n", ms, s);
-			return;
+		if (ms > 1000) response = "Timer response: %.3f ms (%.3f s)\n";
+
+		if (m_LogFile) {
+			m_LogFile << response;
+			m_LogFile.close();
 		}
-		printf("Timer response: %lld us (%.3f ms)\n", us, ms);
+
+		printf(response, us, ms);
 	}
 }

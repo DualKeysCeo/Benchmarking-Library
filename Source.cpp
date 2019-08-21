@@ -1,22 +1,27 @@
-#include "Benchmark.h"
 #include <stdio.h>
+#include <iostream>
+
+#include "Benchmark.h"
 
 using namespace benchmark;
 
 int main() {
 	
 	// Test Code
+	for (int j = 0; j < 5; ++j) {
+		{
+			Timer timer("./log.log");
 
-	{
-		Timer timer;
+			for (int i = 0; i < 1000; ++i) printf("%i", i);
+		}
 
-		for (int i = 0; i < 1000; ++i) printf(" ");
+		{
+			Timer timer("./log.log");
+
+			for (int i = 0; i < 1000; i++) printf("%i", i);
+		}
 	}
-
-	{
-		Timer timer;
-
-		for (int i = 0; i < 1000; i++) printf(" ");
-	}
+	printf("Press enter to finish...");
+	return getchar();
 
 }
