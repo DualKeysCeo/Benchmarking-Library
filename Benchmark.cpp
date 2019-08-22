@@ -5,12 +5,15 @@
 #include "Benchmark.h"
 
 namespace benchmark {
-	Timer::Timer() {
+	Timer::Timer(const char* timerName) {
 		m_StartTimepoint = std::chrono::high_resolution_clock::now();
+		m_TimerName = timerName;
 	}
 
-	Timer::Timer(char const* logPath): m_LogFile(logPath) {
+	Timer::Timer(const char* timerName,
+		char const* logPath = "./Benchmark.log"): m_LogFile(logPath, std::ios_base::app) {
 		m_StartTimepoint = std::chrono::high_resolution_clock::now();
+		m_TimerName = timerName;
 	}
 
 	Timer::~Timer() {
@@ -27,15 +30,21 @@ namespace benchmark {
 		long long us = end - start;
 		double ms = us * 0.001;
 		double s = ms * 0.001;
-		char* response = "Timer response: %lld us (%.3f ms)\n";
+		const char* response = "%s response: %lld us (%.3f ms)\n";
 
-		if (ms > 1000) response = "Timer response: %.3f ms (%.3f s)\n";
+		if (ms > 1000) {
+			response = "%s response: %.3f ms (%.3f s)\n";
+			us = ms;
+			ms = s;
+		}
 
-		if (m_LogFile) {
-			m_LogFile << response;
+		if (m_LogFile.is_open()) {
+			char buff[256];
+			snprintf(buff, sizeof(buff), response, m_TimerName, us, ms);
+			m_LogFile << buff;
 			m_LogFile.close();
 		}
 
-		printf(response, us, ms);
+		printf(response, m_TimerName, us, ms);
 	}
 }
